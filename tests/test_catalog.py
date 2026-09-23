@@ -43,5 +43,25 @@ class BookTestCase(unittest.TestCase):
         self.assertEqual(2, self.book.exemplaires_dispo)
 
 
+class CatalogTestCase(unittest.TestCase):
+    def test_catalog_operations(self):
+        from biblio.catalog import Catalog
+        catalog = Catalog()
+        book = Book(1, "Dune", "Frank Herbert", "9780441172719", 2, 2)
+        duplicate = Book(1, "Autre", "Auteur", "autre", 1, 1)
+        self.assertTrue(catalog.add_book(book))
+        self.assertFalse(catalog.add_book(duplicate))
+        self.assertEqual(catalog.search(" DUNE "), [book])
+        self.assertEqual(catalog.search("HERBERT"), [book])
+        self.assertEqual(catalog.search(" "), [])
+        self.assertEqual(catalog.search("absent"), [])
+        self.assertIs(catalog.find_by_isbn(book.isbn), book)
+        self.assertIsNone(catalog.find_by_isbn("absent"))
+        self.assertFalse(catalog.remove_book(999))
+        self.assertTrue(catalog.remove_book(1))
+        self.assertFalse(catalog.remove_book(1))
+        self.assertEqual(catalog.search("dune"), [])
+
+
 if __name__ == "__main__":
     unittest.main()
