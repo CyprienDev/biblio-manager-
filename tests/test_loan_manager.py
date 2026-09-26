@@ -14,3 +14,26 @@ class Tests(unittest.TestCase):
         self.assertFalse(service.return_loan(loan.id, day))
         self.assertEqual(book.exemplaires_dispo, 1)
         self.assertEqual(member.emprunts_en_cours, 0)
+
+
+    def test_empty_stock_rejected(self):
+        from biblio.exceptions import BookNotAvailableError
+        day, book, member, manager = fixture()
+        manager.create_loan(book, member, day)
+        with self.assertRaises(BookNotAvailableError):
+            manager.create_loan(book, member, day)
+        self.assertEqual(len(manager.loans), 1)
+        self.assertEqual(member.emprunts_en_cours, 1)
+
+    def test_quota_expiration_and_branch(self):
+        from datetime import date
+        from biblio.exceptions import MemberNotEligibleError, BookNotAvailableError
+        day, book, member, manager = fixture(quota=1)
+        with self.assertRaises(BookNotAvailableError):
+            manager.create_loan(book, member, day, branch_id=99)
+        with self.assertRaises(MemberNotEligibleError):
+            manager.create_loan(book, member, date(2027, 1, 1))
+        manager.create_loan(book, member, day)
+        with self.assertRaises(MemberNotEligibleError):
+            manager.create_loan(book, member, day)
+        self.assertEqual(member.emprunts_en_cours, 1)
