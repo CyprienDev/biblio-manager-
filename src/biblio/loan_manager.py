@@ -1,4 +1,4 @@
-from .exceptions import BookNotAvailableError, MemberNotEligibleError
+from .exceptions import MemberNotEligibleError
 from .models.loan import Loan
 
 
@@ -15,14 +15,13 @@ class LoanManager:
             raise MemberNotEligibleError(member.id)
         due = self.calendar.add_days(on, duration)
         copies = self.inventory.available(book.id, branch_id)
-        if not copies:
-            raise BookNotAvailableError(book.id)
-        copy = copies[0]
+        copy = copies[0] if copies else None
         subscription = self.policy.subscriptions.active_for(member.id, on)
         if not member.add_loan(subscription.quota):
             raise MemberNotEligibleError(member.id)
-        copy.status = "loaned"
-        loan = Loan(self.next_id, book, member, on, due, copy_id=copy.id)
+        if copy is not None:
+            copy.status = "loaned"
+        loan = Loan(self.next_id, book, member, on, due, copy_id=copy.id if copy is not None else None)
         self.loans[loan.id] = loan
         self.next_id += 1
         return loan
