@@ -37,3 +37,13 @@ class Tests(unittest.TestCase):
         with self.assertRaises(MemberNotEligibleError):
             manager.create_loan(book, member, day)
         self.assertEqual(member.emprunts_en_cours, 1)
+
+    def test_rejected_loan_does_not_allocate_id(self):
+        from biblio.exceptions import BookNotAvailableError
+        day, book, member, manager = fixture()
+        book.borrow_copy()
+        with self.assertRaises(BookNotAvailableError):
+            manager.create_loan(book, member, day)
+        self.assertEqual(manager.next_id, 1)
+        self.assertEqual(member.emprunts_en_cours, 0)
+        self.assertEqual(manager.loans, {})
