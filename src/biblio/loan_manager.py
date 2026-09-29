@@ -25,3 +25,12 @@ class LoanManager:
         self.loans[loan.id] = loan
         self.next_id += 1
         return loan
+
+    def extend_loan(self, loan_id, on, renewal_policy, days=5):
+        if days <= 0:
+            raise ValueError("Prolongation positive requise")
+        loan = self.loans[loan_id]
+        if not renewal_policy.can_extend(loan, on):
+            return False
+        loan.date_retour_prevue = self.calendar.add_days(loan.date_retour_prevue, days)
+        return True
