@@ -1,2 +1,2 @@
 def is_available(copy) -> bool:
-    return copy.status == "available"
+    return copy.status in {"available", "repair"}
