@@ -29,8 +29,12 @@ class Catalog:
         return [
             book
             for book in self._books.values()
-            if query in book.titre.casefold() or query in book.auteur.casefold()
+            if self._matches(book, query)
         ]
+
+    @staticmethod
+    def _matches(book: Book, query: str) -> bool:
+        return any(query in value.casefold() for value in (book.titre, book.auteur))
 
     def find_by_isbn(self, isbn: str) -> Optional[Book]:
         for book in self._books.values():
