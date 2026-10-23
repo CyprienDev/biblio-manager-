@@ -20,3 +20,9 @@ class Tests(unittest.TestCase):
         self.assertFalse(validate_isbn("9780441172718"))
         self.assertFalse(validate_isbn("abcdefghij"))
         self.assertEqual(format_date(date(2026, 9, 11)), "11/09/2026")
+
+    def test_consecutive_exceptional_closures(self):
+        calendar = BusinessCalendar(closures={date(2026, 9, 14), date(2026, 9, 15)})
+        self.assertFalse(calendar.is_open(date(2026, 9, 14)))
+        self.assertEqual(calendar.add_days(date(2026, 9, 11), 1), date(2026, 9, 16))
+        self.assertEqual(calendar.add_days(date(2026, 9, 11), 2), date(2026, 9, 17))

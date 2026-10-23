@@ -10,7 +10,7 @@ class BusinessCalendar:
     closures: set[date] = field(default_factory=set)
 
     def is_open(self, day: date) -> bool:
-        return self.hours.is_open(day)
+        return self.hours.is_open(day) and day not in self.closures
 
     def add_days(self, start: date, count: int) -> date:
         if count < 0:
