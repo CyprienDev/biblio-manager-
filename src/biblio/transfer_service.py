@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 from .models.transfer import Transfer
 
 
@@ -19,9 +21,11 @@ class TransferService:
 
     def receive(self, transfer_id):
         transfer = self.transfers[transfer_id]
-        if transfer.received:
-            return False
         copy = self.inventory.get(transfer.copy_id)
+        if transfer.received:
+            duplicate = replace(copy, id=copy.id + ":received-again")
+            self.inventory.copies[duplicate.id] = duplicate
+            return True
         copy.branch_id = transfer.destination
         copy.status = "available"
         transfer.received = True
