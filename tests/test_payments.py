@@ -37,3 +37,10 @@ class Tests(unittest.TestCase):
                                              self.day + timedelta(days=6)))
         self.assertTrue(policy.should_remind(Decimal("5"), self.day,
                                             self.day + timedelta(days=7)))
+
+    def test_successive_partial_payments(self):
+        self.payments.pay(Payment("p1", 1, Decimal("3.25"), self.day))
+        self.assertEqual(self.ledger.balance(1), Decimal("6.75"))
+        self.payments.pay(Payment("p2", 1, Decimal("2.50"), self.day))
+        self.assertEqual(self.ledger.balance(1), Decimal("4.25"))
+        self.assertEqual(self.ledger.entries["payment:p2"].amount, Decimal("-2.50"))

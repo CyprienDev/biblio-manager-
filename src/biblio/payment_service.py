@@ -16,7 +16,7 @@ class PaymentService:
         if payment.amount > self.ledger.balance(payment.account_id):
             raise ValueError("Paiement supérieur au solde")
         entry = LedgerEntry("payment:" + payment.id, payment.account_id,
-                            -self.ledger.balance(payment.account_id), payment.day)
+                            -payment.amount, payment.day)
         self.ledger.post(entry)
         self.payments[payment.id] = payment
         return True
