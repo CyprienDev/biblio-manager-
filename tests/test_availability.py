@@ -19,3 +19,11 @@ class Tests(unittest.TestCase):
         self.assertEqual(len(inventory.copies), 2)
         with self.assertRaises(ValueError):
             inventory.register_book(Book(1, "Autre", "Auteur", "y", 1, 1))
+
+    def test_only_available_state_is_borrowable(self):
+        from biblio.availability import is_available
+        from biblio.models.copy import Copy
+        for status in ("loaned", "repair", "lost", "transit", "reserved"):
+            with self.subTest(status=status):
+                self.assertFalse(is_available(Copy("c", 1, status=status)))
+        self.assertTrue(is_available(Copy("c", 1)))
