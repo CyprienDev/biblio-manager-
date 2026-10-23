@@ -1,3 +1,7 @@
+def addressed_to(member, text):
+    return member.email, text
+
+
 def due_reminder(loan):
     return f"Retour de {loan.livre.titre} prévu le {loan.date_retour_prevue.isoformat()}"
 
