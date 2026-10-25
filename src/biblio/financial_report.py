@@ -6,5 +6,5 @@ def balances(ledger):
 
 
 def total_debt(ledger):
-    return sum((max(Decimal("0"), amount) for amount in balances(ledger).values()),
-               Decimal("0"))
+    debts = (amount for amount in balances(ledger).values() if amount > 0)
+    return sum(debts, Decimal("0"))

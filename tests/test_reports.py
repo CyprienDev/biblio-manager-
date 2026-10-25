@@ -27,3 +27,15 @@ class Tests(unittest.TestCase):
         ReturnService(manager).return_loan(loan.id, day)
         self.assertEqual(report.active_count(), 0)
         self.assertEqual(report.overdue_report(loan.date_retour_prevue + timedelta(days=1)), [])
+
+    def test_financial_totals_preserve_cents_and_ignore_credit(self):
+        from datetime import date
+        from biblio.financial_report import balances, total_debt
+        ledger = AccountLedger()
+        for account_id, amount in ((1, "0.10"), (2, "0.20"), (3, "-1.00")):
+            ledger.register(Account(account_id))
+            ledger.post(LedgerEntry(str(account_id), account_id, Decimal(amount), date(2026, 10, 12)))
+        self.assertEqual(total_debt(ledger), Decimal("0.30"))
+        self.assertEqual(balances(ledger), {1: Decimal("0.10"), 2: Decimal("0.20"), 3: Decimal("-1.00")})
+        self.assertEqual(len(ledger.entries), 3)
+        self.assertEqual(total_debt(AccountLedger()), Decimal("0"))
