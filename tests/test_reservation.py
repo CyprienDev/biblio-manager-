@@ -27,3 +27,15 @@ class Tests(unittest.TestCase):
         manager = ReservationManager()
         self.assertFalse(manager.reserve(Book(1, "A", "B", "x", 1, 1),
                                          Reservation("r", 1, 1, day)))
+
+    def test_unknown_and_middle_cancellation_preserve_other_members(self):
+        from biblio.reservation_queue import ReservationQueue
+        queue = ReservationQueue()
+        reservations = [Reservation(str(i), 1, i, date(2026, 10, 19)) for i in range(3)]
+        for item in reservations:
+            queue.add(item)
+        self.assertFalse(queue.cancel("unknown"))
+        self.assertTrue(queue.cancel("1"))
+        self.assertEqual([item.status for item in reservations], ["waiting", "cancelled", "waiting"])
+        self.assertFalse(queue.cancel("1"))
+        self.assertIs(queue.next(1), reservations[0])

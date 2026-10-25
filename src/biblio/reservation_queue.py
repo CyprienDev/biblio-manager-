@@ -14,7 +14,7 @@ class ReservationQueue:
 
     def cancel(self, reservation_id):
         for item in self.items:
-            if item.status in {"waiting", "ready"}:
+            if item.id == reservation_id and item.status in {"waiting", "ready"}:
                 item.status = "cancelled"
                 return True
         return False
