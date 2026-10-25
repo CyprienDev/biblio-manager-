@@ -14,8 +14,7 @@ class RefundService:
                 raise ValueError("Référence de remboursement réutilisée")
             return False
         payment = self.payments.payments[refund.payment_id]
-        total = sum((item.amount for item in self.refunds.values()
-                     if item.payment_id == payment.id), Decimal("0"))
+        total = Decimal("0")
         if (not refund.amount.is_finite() or refund.amount <= 0
                 or total + refund.amount > payment.amount or refund.day < payment.day):
             raise ValueError("Remboursement invalide")
