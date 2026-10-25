@@ -3,6 +3,5 @@ class BorrowingPolicy:
         self.subscriptions = subscriptions
 
     def can_borrow(self, member, on):
-        subscription = self.subscriptions.active_for(member.id, on)
-        return (subscription is not None
-                and member.can_borrow(subscription.quota))
+        quota = self.subscriptions.quota_for(member.id, on)
+        return quota > 0 and member.can_borrow(quota)
