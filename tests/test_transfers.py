@@ -19,3 +19,14 @@ class Tests(unittest.TestCase):
         copy.status = "loaned"
         with self.assertRaises(ValueError):
             service.start("t2", copy.id, 3)
+
+    def test_repeated_receipts_do_not_create_inventory_copies(self):
+        _, book, _, manager = fixture()
+        service = TransferService(manager.inventory)
+        service.start("t", book.copies[0].id, 2)
+        self.assertTrue(service.receive("t"))
+        before = dict(manager.inventory.copies)
+        for _ in range(3):
+            self.assertFalse(service.receive("t"))
+        self.assertEqual(manager.inventory.copies, before)
+        self.assertEqual(len(manager.inventory.available(book.id, 2)), 1)
