@@ -78,3 +78,17 @@ class Tests(unittest.TestCase):
         self.assertFalse(self.acquisitions.register_supplier(Supplier("s", "Librairie")))
         with self.assertRaises(ValueError):
             self.acquisitions.register_supplier(Supplier("s", "Autre"))
+
+    def test_invalid_reference_and_retry_after_completion(self):
+        for receipt_id in ("", None, 1):
+            with self.assertRaises(ValueError):
+                self.service.receive(receipt_id, "o", 1)
+        self.assertEqual(self.inventory.copies, {})
+        self.service.receive("r1", "o", 1)
+        self.service.receive("r2", "o", 2)
+        self.assertFalse(self.service.receive("r1", "o", 1))
+        self.assertFalse(self.service.receive("r2", "o", 2))
+        with self.assertRaises(ValueError):
+            self.service.receive("r2", "o", 1)
+        self.assertEqual(self.order.received, 3)
+        self.assertEqual(len(self.inventory.copies), 3)

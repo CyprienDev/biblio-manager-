@@ -8,10 +8,7 @@ class ReceivingService:
         self.receipts = {}
 
     def receive(self, receipt_id, order_id, quantity):
-        if not isinstance(receipt_id, str) or not receipt_id:
-            raise ValueError("Référence de réception requise")
-        if type(quantity) is not int or quantity <= 0:
-            raise ValueError("Quantité entière positive requise")
+        self._validate_receipt(receipt_id, quantity)
         request = (order_id, quantity)
         if receipt_id in self.receipts:
             if self.receipts[receipt_id] != request:
@@ -26,3 +23,10 @@ class ReceivingService:
         order.received += quantity
         self.receipts[receipt_id] = request
         return True
+
+    @staticmethod
+    def _validate_receipt(receipt_id, quantity):
+        if not isinstance(receipt_id, str) or not receipt_id:
+            raise ValueError("Référence de réception requise")
+        if type(quantity) is not int or quantity <= 0:
+            raise ValueError("Quantité entière positive requise")
