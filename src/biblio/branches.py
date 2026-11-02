@@ -1,3 +1,4 @@
+from .exceptions import BranchNotFoundError
 from .models.branch import Branch
 
 
@@ -12,4 +13,7 @@ class BranchRegistry:
         return True
 
     def get(self, branch_id: int) -> Branch:
-        return self.branches[branch_id]
+        try:
+            return self.branches[branch_id]
+        except KeyError:
+            raise BranchNotFoundError(branch_id) from None

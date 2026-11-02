@@ -1,3 +1,4 @@
+from .exceptions import InventoryError
 from .models.inventory_session import InventorySession
 
 
@@ -8,7 +9,7 @@ class InventoryService:
 
     def start(self, session_id, branch_id):
         if session_id in self.sessions:
-            raise ValueError("Session déjà enregistrée")
+            raise InventoryError("Session déjà enregistrée")
         expected = {copy.id for copy in self.inventory.copies.values()
                     if copy.branch_id == branch_id and copy.status == "available"}
         session = InventorySession(session_id, branch_id, expected)
@@ -18,7 +19,7 @@ class InventoryService:
     def scan(self, session_id, copy_id):
         session = self.sessions[session_id]
         if session.closed or copy_id not in session.expected:
-            raise ValueError("Scan invalide")
+            raise InventoryError("Scan invalide")
         session.seen.add(copy_id)
 
     def close(self, session_id):

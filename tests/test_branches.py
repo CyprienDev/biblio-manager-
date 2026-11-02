@@ -3,6 +3,7 @@ from datetime import date
 from biblio.models.branch import Branch
 from biblio.branches import BranchRegistry
 from biblio.opening_hours import OpeningHours
+from biblio.exceptions import BranchNotFoundError
 
 
 class Tests(unittest.TestCase):
@@ -16,3 +17,11 @@ class Tests(unittest.TestCase):
         self.assertFalse(OpeningHours().is_open(date(2026, 9, 13)))
         with self.assertRaises(ValueError):
             OpeningHours(frozenset())
+
+    def test_unknown_branch_preserves_key_error_contract(self):
+        registry = BranchRegistry()
+        with self.assertRaises(BranchNotFoundError) as caught:
+            registry.get(99)
+        self.assertIsInstance(caught.exception, KeyError)
+        self.assertEqual(caught.exception.args, (99,))
+        self.assertEqual(registry.branches, {})
