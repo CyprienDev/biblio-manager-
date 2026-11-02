@@ -91,3 +91,9 @@ Ce dépôt n'est pas destiné à un usage en production. Il a été conçu comme
 ## Licence
 
 MIT — dépôt pédagogique créé pour les besoins du cours.
+
+## Exercices d'analyse de l'historique
+
+Les [exercices](docs/exercices.md) expliquent comment extraire les commits,
+calculer les métriques à une date de coupure et construire une baseline churn.
+Utiliser le SHA réel du jalon et conserver les dates réelles de l'historique.
